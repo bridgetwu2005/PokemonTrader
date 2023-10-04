@@ -12,33 +12,37 @@ contract PokemonBase is Ownable{
     struct Pokemon{
         uint pokedex;
         string name;
-        
         uint8 id;
         uint8 iv;
         uint8 lvl;
+        uint256 price;
+        string image;
     }
     
-    Pokemon[] public pokemonList;
+    Pokemon[] pokemonList;
 
-    mapping (uint => address) pokemonToOwner;
+    mapping (uint => address payable) pokemonToOwner;
     mapping (address => uint[]) pokemonIdList;
-    
+
+    event message(string _msg);
+    event messageNumber(string _msg, uint _num);
+
     //Create a new Pokemon
-    function _generatePokemon (string memory _str) internal returns(Pokemon memory) {
+    function _generatePokemon (string memory _name,  uint256 _price, string memory _image) internal returns(Pokemon memory) {
 
         //Properties of the pokemon, including its name, id, pokedex, and value
-        uint pokedex = _generatepokedex(_str);
-        string memory name = _str;
+        uint pokedex = _generatepokedex(_name);
+        string memory name = _name;
 
         uint8 id = uint8(pokemonList.length) + 1;
         uint8 iv = uint8(_generateIV());
         uint8 lvl = 0;
 
         //Assigns the pokemon to an owner
-        pokemonToOwner[pokedex] = msg.sender;
+        pokemonToOwner[id] = payable(msg.sender);
 
         //Adds pokemon to the pokemon list
-        Pokemon memory newPokemon = Pokemon(pokedex, name, id, iv, lvl);
+        Pokemon memory newPokemon = Pokemon(pokedex, name, id, iv, lvl, _price, _image);
         pokemonList.push(newPokemon);
         
         //Adds pokemon idber to pokemon idber list
